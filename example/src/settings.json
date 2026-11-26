@@ -1,0 +1,12 @@
+{
+  "buildCommand": "",
+  "buildOutputPath": "main.py",
+  "runCommand": "py",
+  "buildArgs": [],
+  "runArgs": ["-u", "<<file>>"],
+  "payload": null,
+  "ignore": false,
+  "rootFolder": "",
+  "ignoreFiles": [],
+  "processPath": ""
+}

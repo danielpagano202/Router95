@@ -1,9 +1,9 @@
-use std::cmp::{max, min};
+use std::{cmp::{max, min}, collections::HashMap, fs, path::{Path}};
 use crossterm::event::{self, KeyCode, KeyEventKind};
 use ratatui::{
     Frame, layout::{Constraint, Direction, Layout, Rect}, style::{Color, Style}, text::{Line, Span}, widgets::{Block, List, ListItem, Paragraph},
 };
-use crate::structs::create_enums::{Step};
+use crate::{structs::create_enums::{Languages::{self, C, Go, Python, Rust, TS}, Step}, utils};
 use crate::structs::create_app::CreateApp;
 
 
@@ -154,6 +154,62 @@ pub fn run() -> std::io::Result<()> {
             
         }
     });
-    println!("{:?}", app.results);
+
+    fs::create_dir_all(&app.results.name).expect("Failed to create project directory");
+    fs::create_dir_all(&Path::new(&app.results.name).join("src")).expect("Failed to create src directory");
+    fs::create_dir_all(&Path::new(&app.results.name).join("public")).expect("Failed to create public directory");
+    fs::copy(Path::new("example/public").join("favicon.ico"), &Path::new(&app.results.name).join("public").join("favicon.ico")).expect("favicon.ico couldn't be copied");
+
+    fs::copy(Path::new("example/src").join("index.html"), &Path::new(&app.results.name).join("src/index.html")).expect("index.html couldn't be copied");
+    fs::copy(Path::new("example/src").join("main.py"), &Path::new(&app.results.name).join("src/main.py")).expect("main.py couldn't be copied");
+    fs::copy(Path::new("example/src").join("settings.json"), &Path::new(&app.results.name).join("src/settings.json")).expect("settings.json couldn't be copied");
+    fs::copy(Path::new("example/src").join("error.html"), &Path::new(&app.results.name).join("src/error.html")).expect("error.html couldn't be copied");
+
+
+    let language_mapping:HashMap<Languages, &str> = HashMap::from([
+        (TS, "./ts"),
+        (Python, "./python"),
+        (C, "./c"),
+        (Go, "./go"),
+        (Languages::JS, "./js"),
+        (Rust, "./rust"),
+        (Languages::Java, "./java")
+    ]);
+    
+    let project_directory = Path::new(&app.results.name);
+
+    for language in &app.results.languages {
+        let language_folder_str = language_mapping.get(language).unwrap();
+        let language_folder = Path::new(language_folder_str);
+        let complete_path = Path::new("example/src").join(language_folder);
+        let complete_output_path = Path::new(&project_directory.join("src")).join(language_folder);
+        utils::files::copy_directory_recursive(&complete_path, &complete_output_path).expect("Failed to copy language folder")
+    }
+
+    for extra in &app.results.choices {
+        match extra {
+            crate::structs::create_enums::ExtraChoices::Readme => {
+                let complete_path = Path::new("example/").join("README.md");
+                let complete_output_path = Path::new(&project_directory).join("README.md");
+                fs::copy(&complete_path, &complete_output_path).expect("Failed to copy README file");
+            },
+            crate::structs::create_enums::ExtraChoices::Gitignore => {
+                let complete_path = Path::new("example/").join(".gitignore");
+                let complete_output_path = Path::new(&project_directory).join(".gitignore");
+                fs::copy(&complete_path, &complete_output_path).expect("Failed to copy .gitignore file");
+            },
+            crate::structs::create_enums::ExtraChoices::APIRoute => {
+                let complete_path = Path::new("example/src").join("api");
+                let complete_output_path = Path::new(&project_directory.join("src")).join("api");
+                utils::files::copy_directory_recursive(&complete_path, &complete_output_path).expect("Failed to copy API Route folder");
+            },
+            crate::structs::create_enums::ExtraChoices::IDMatching => {
+                let complete_path = Path::new("example/src").join("id");
+                let complete_output_path = Path::new(&project_directory.join("src")).join("id");
+                utils::files::copy_directory_recursive(&complete_path, &complete_output_path).expect("Failed to copy ID Matching folder");
+            },
+        }
+    }
+
     return Ok(());
 }

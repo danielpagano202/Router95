@@ -60,10 +60,12 @@ impl CreateApp {
                 },
                 ListSet {
                     items: vec![
-                        "Include a Dockerfile",
                         "Include a Readme",
+                        "Include a .gitignore",
+                        "Include ID Matching",
+                        "Include an API Route",
                     ],
-                    max_selections: 2,
+                    max_selections: 4,
                     min_selections: 0,
                     title: "Choose your extra options",
                 },

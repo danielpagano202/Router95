@@ -15,6 +15,15 @@ type ResponseData struct {
 	Data         string `json:"data"`
 }
 
+type TemplateArguments struct {
+	Language string `json:"language"`
+}
+
+type TemplateData struct {
+	TemplatePath string            `json:"templatePath"`
+	Arguments    TemplateArguments `json:"arguments"`
+}
+
 func main() {
 	// Create a scanner to read from standard input line by line
 	scanner := bufio.NewScanner(os.Stdin)
@@ -44,11 +53,23 @@ func processLine() error {
 	scriptDir := filepath.Dir(execPath)
 	htmlPath := filepath.Join(scriptDir, "index.html")
 
+	templateData := TemplateData{
+		TemplatePath: htmlPath,
+		Arguments: TemplateArguments{
+			Language: "Go",
+		},
+	}
+
+	templateJSON, err := json.Marshal(templateData)
+	if err != nil {
+		return err
+	}
+
 	// 1. Construct the data structure
 	data := ResponseData{
-		ResponseType: "htmlfile",
+		ResponseType: "template",
 		ResponseCode: 200,
-		Data:         htmlPath,
+		Data:         string(templateJSON),
 	}
 
 	// 2. Convert struct to a clean single-line JSON payload

@@ -3,7 +3,7 @@ import json
 import os
 
 # Loop through each line coming from Rust's stdin
-for line in sys.stdin:    
+for line in sys.stdin:
     try:
         # Get the directory where this script lives
         script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -11,9 +11,14 @@ for line in sys.stdin:
         
         # 1. Fixed key syntax ("type") and absolute path assembly
         data = {
-           "responseType": "htmlfile",
+           "responseType": "template",
            "responseCode": 200,
-           "data": html_path
+           "data": json.dumps({
+                "templatePath": html_path,
+                "arguments": {
+                    "name": "Super Router",
+                }
+           })
         }
         
         # 2. Convert dictionary to a clean single-line JSON string

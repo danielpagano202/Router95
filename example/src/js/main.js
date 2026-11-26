@@ -17,9 +17,14 @@ rl.on("line", (line) => {
 
     // 1. Fixed key syntax ("type") and absolute path assembly
     const data = {
-      responseType: "htmlfile",
+      responseType: "template",
       responseCode: 200,
-      data: htmlPath,
+      data: JSON.stringify({
+        templatePath: htmlPath,
+        arguments: {
+          language: "Node.js",
+        },
+      }),
     };
 
     // 2. Convert object to a clean single-line JSON string

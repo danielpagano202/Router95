@@ -1,11 +1,12 @@
 [package]
-name = "SuperRouter"
+name = "Router95"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 axum = "0.8.9"
-tokio = { version = "1.53.1", features = ["rt", "rt-multi-thread", "macros", "net", "process", "io-util"] }
+tokio = { version = "1.53.1", features = ["rt", "rt-multi-thread", "macros", "net", "process", "io-util", "fs"] }
+tokio-util = { version = "0.7", features = ["io"] }
 walkdir = "2.5"
 regex = "1.10"
 serde = { version = "1.0.229", features = ["derive"] }
@@ -14,3 +15,4 @@ clap = { version = "4.5", features = ["derive"] }
 ratatui = "0.30.2"
 crossterm = "0.29.0"
 tera = {version = "2", features = ["fast"]}
+mime_guess = "2.0"

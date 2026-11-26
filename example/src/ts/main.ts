@@ -9,7 +9,7 @@ const rl = readline.createInterface({
 });
 
 // Loop through each line coming from Rust's stdin
-rl.on("line", (line) => {
+rl.on("line", () => {
   try {
     // Get the directory where this script lives
     const scriptDir = __dirname;
@@ -17,9 +17,14 @@ rl.on("line", (line) => {
 
     // 1. Fixed key syntax ("type") and absolute path assembly
     const data = {
-      responseType: "htmlfile",
+      responseType: "template",
       responseCode: 200,
-      data: htmlPath,
+      data: JSON.stringify({
+        templatePath: htmlPath,
+        arguments: {
+          language: "TypeScript",
+        },
+      }),
     };
 
     // 2. Convert object to a clean single-line JSON string
@@ -27,8 +32,11 @@ rl.on("line", (line) => {
 
     // 3. CRUCIAL: print the JSON line (console.log in Node automatically flushes)
     console.log(jsonResponse);
-  } catch (e) {
-    // If anything breaks, print to stdout so Rust can see the error instead of hanging
-    console.log(`ERROR: ${e.message}`);
+  } catch (e: any) {
+    if (e instanceof Error) {
+      console.log(`ERROR: ${e.message}`);
+    } else {
+      console.log(`ERROR: ${String(e)}`);
+    }
   }
 });

@@ -48,9 +48,14 @@ fn process_response() -> Result<String, Box<dyn std::error::Error>> {
 
     // 2. Build the data structure
     let data = ResponseData {
-        response_type: "htmlfile",
+        response_type: "template",
         response_code: 200,
-        data: html_path_str,
+        data: serde_json::to_string(&serde_json::json!({
+            "templatePath": html_path_str,
+            "arguments": {
+                "language": "Rust",
+            },
+        }))?,
     };
 
     // 3. Convert structure to a clean single-line JSON string

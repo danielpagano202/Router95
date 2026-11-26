@@ -6,6 +6,7 @@ mod build;
 mod utils;
 mod structs;
 mod create;
+mod services;
 
 #[derive(Parser, Debug)]
 #[command(version, about)]
@@ -21,11 +22,6 @@ enum Commands {
     Run {
         /// The path to the folder you want to execute
         folder: PathBuf,
-
-        // You can still mix in optional flags if you want
-        /// Enable extra debugging output
-        #[arg(short, long)]
-        verbose: bool,
     },
     Build{
         // The path to the folder you want to build
@@ -34,8 +30,6 @@ enum Commands {
     Create{
 
     },
-    /// Another optional subcommand (like ./program stop)
-    Stop,
 }
 
 fn main() {
@@ -43,10 +37,7 @@ fn main() {
     let cli = Cli::parse();
 
     match &cli.command {
-        Commands::Run { folder, verbose } => {
-            if *verbose {
-                println!("Debug: Preparing to run process...");
-            }
+        Commands::Run { folder} => {
             webserver::start_server(PathBuf::from(folder));
         }
         Commands::Build { folder } => {
@@ -56,9 +47,6 @@ fn main() {
         Commands::Create { } => {
             println!("Creating new project...");
             _ = create::run();
-        }
-        Commands::Stop => {
-            println!("Stopping all active operations.");
         }
     }
 
